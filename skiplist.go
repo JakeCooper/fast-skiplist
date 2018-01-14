@@ -7,8 +7,10 @@ import (
 )
 
 var (
-	DefaultMaxLevel    int     = 21
-	DefaultProbability float64 = 1 / math.E
+	// DefaultMaxLevel : Max Level for skiplist layers
+	DefaultMaxLevel = 21
+	// DefaultProbability : Default prob for skiplist
+	DefaultProbability = 1 / math.E
 )
 
 // Front returns the head node of the list.
@@ -20,6 +22,11 @@ func (list *SkipList) Front() *Element {
 // Only operates on the bottom level of the skip list (a fully linked list).
 func (element *Element) Next() *Element {
 	return element.next[0]
+}
+
+// Back returns the tail node of the list.
+func (list *SkipList) Back() *Element {
+	return list.next[list.length-1]
 }
 
 // Set inserts a value in the list with the specified key, ordered by the key.
@@ -59,7 +66,7 @@ func (list *SkipList) Set(key float64, value interface{}) *Element {
 // Get finds an element by key. It returns element pointer if found, nil if not found.
 // Locking is optimistic and happens only after searching with a fast check for deletion after locking.
 func (list *SkipList) Get(key float64) *Element {
-	var prev *elementNode = &list.elementNode
+	var prev = &list.elementNode
 	var next *Element
 
 	for i := list.maxLevel - 1; i >= 0; i-- {
@@ -106,7 +113,7 @@ func (list *SkipList) Remove(key float64) *Element {
 // caches them. This approach is similar to a "search finger" as described by Pugh:
 // http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.17.524
 func (list *SkipList) getPrevElementNodes(key float64) []*elementNode {
-	var prev *elementNode = &list.elementNode
+	var prev = &list.elementNode
 	var next *Element
 
 	prevs := list.prevNodesCache
